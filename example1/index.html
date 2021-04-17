@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>HTTP Example 1</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js" integrity="sha512-7oYXeK0OxTFxndh0erL8FsjGvrl2VMDor6fVqzlLGfwOQQqTbYsGPv4ZZ15QHfSk80doyaM0ZJdvkyDcVO7KFA==" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js" integrity="sha512-WFN04846sdKMIP5LKNphMaWzU7YpMyCU245etK3g/2ARYbPK9Ub18eG+ljU96qKRCWh+quCY7yefSmlkQw1ANQ==" crossorigin="anonymous"></script>
+        <script type="text/javascript">
+            // Add the javascript code
+            var app = angular.module('ProductModule', []);
+            var controller = app.controller('ProductController', ($scope, $http) => {
+                $scope.product = {};
+                $scope.products = new Array();
+
+                $http.get('/example1/server_get.php').then((result) => {
+                    $scope.products = result.data;
+                });
+
+                $scope.addProduct = () => {
+                    $http.post('/example1/server_post_json.php', $scope.product).then((result) => {
+                        alert('Result: ' + result.data.result);
+                    })
+                }
+            });
+        </script>
+    </head>
+    <body>
+        <div class="container" ng-app="ProductModule" ng-controller="ProductController">
+            <form method="POST" action="server_post.php">
+                <!-- Add the form fields -->
+                <div class="form-group">
+                    <label for="txtName">Product name</label>
+                    <input type="text" class="form-control" id="txtName" name="name" ng-model="product.name" placeholder="Enter product name" />
+                </div>
+                <div class="form-group">
+                    <label for="txtDescription">Product description</label>
+                    <textarea class="form-control" id="txtDescription" name="description" ng-model="product.description" placeholder="Enter product description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="txtPrice">Product price</label>
+                    <input type="text" class="form-control" id="txtPrice" name="price" ng-model="product.price" placeholder="Enter product price" />
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="button" class="btn btn-primary" ng-click="addProduct()">Submit AJAX</button>
+            </form>
+            <table class="table table-primary">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Product name</th>
+                        <th>Product price</th>
+                        <th>Product description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="product in products">
+                        <td>
+                            {{ product.id }}
+                        </td>
+                        <td>
+                            {{ product.name }}
+                        </td>
+                        <td>
+                            {{ product.price }}
+                        </td>
+                        <td>
+                            {{ product.description }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>

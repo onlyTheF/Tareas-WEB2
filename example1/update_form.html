@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Update form</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js" integrity="sha512-7oYXeK0OxTFxndh0erL8FsjGvrl2VMDor6fVqzlLGfwOQQqTbYsGPv4ZZ15QHfSk80doyaM0ZJdvkyDcVO7KFA==" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js" integrity="sha512-WFN04846sdKMIP5LKNphMaWzU7YpMyCU245etK3g/2ARYbPK9Ub18eG+ljU96qKRCWh+quCY7yefSmlkQw1ANQ==" crossorigin="anonymous"></script>
+        <script type="text/javascript">
+            // EXERCISE 5: Complete code
+            var app = angular.module('ProductUpdateModule', []);
+            var controller = app.controller('ProductUpdateController', ($scope, $http) => {
+                $scope.product = {};
+                $scope.products = new Array();
+
+                angular.element(document).ready(() => {
+                    $scope.getProducts();
+                });
+
+                $scope.getProducts = () => {
+                    $http.get('/example1/server_get.php').then((result) => {
+                        $scope.products = result.data;
+                    });
+                }
+
+                $scope.selectProduct = () => {
+                    $http.get(`/example1/server_get_one.php?id=${$scope.product.id}`).then((result) => {
+                        let product = result.data;
+                        $scope.product.name = product.name;
+                        $scope.product.description = product.description;
+                        $scope.product.price = product.price;
+                    })
+                }
+
+                $scope.updateProduct = () => {
+                    $http.put('/example1/server_put.php', $scope.product).then((result) => {
+                        $scope.getProducts();
+                        alert('Data has been updated');
+                    });
+                }
+            });
+        </script>
+    </head>
+    <body>
+        <div class="container" ng-app="ProductUpdateModule" ng-controller="ProductUpdateController">
+            Select product to modify:
+
+            <!-- EXERCISE 3: Add a select element that calls
+                 selectProduct when the choice changes. Map to products -->
+            <select ng-model="product.id" ng-change="selectProduct()">
+                <option ng-repeat="product in products" value="{{ product.id }}">{{ product.name }}</option>
+            </select>
+            <form>
+                <!-- EXERCISE 4: Add required fields -->
+                <div class="form-group">
+                    <label for="txtName">Product name</label>
+                    <input type="text" class="form-control" id="txtName" name="name" ng-model="product.name" placeholder="Enter product name" />
+                </div>
+                <div class="form-group">
+                    <label for="txtDescription">Product description</label>
+                    <textarea class="form-control" id="txtDescription" name="description" ng-model="product.description" placeholder="Enter product description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="txtPrice">Product price</label>
+                    <input type="text" class="form-control" id="txtPrice" name="price" ng-model="product.price" placeholder="Enter product price" />
+                </div>
+                <button type="button" class="btn btn-primary" ng-click="updateProduct()">Update AJAX</button>
+            </form>
+            <table class="table table-primary">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Product name</th>
+                        <th>Product price</th>
+                        <th>Product description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="product in products">
+                        <td>
+                            {{ product.id }}
+                        </td>
+                        <td>
+                            {{ product.name }}
+                        </td>
+                        <td>
+                            {{ product.price }}
+                        </td>
+                        <td>
+                            {{ product.description }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>
